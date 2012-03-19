@@ -1,0 +1,63 @@
+Live SDK for Android 
+
+version 5.0
+
+1. Introduction
+
+The Live SDK for Android library is intended to help developers to easily
+integrate SkyDrive and Hotmail contacts and calendars into their Android apps.
+
+2. Reference the API
+
+After you download the Android API source code, you must compile it. You need
+to do this only once. After you compile the Android API source code on your
+computer, you can reference it from multiple Eclipse Android projects on that
+same computer.
+
+To compile the Android API source code  
+1. Start Eclipse, if it is not already running.
+2. Click File > Import.
+3. Expand General, click Existing Projects into Workspace, and then click Next.
+4. With the Select root directory option selected, click Browse.
+5. Go to and select the src folder within the downloaded Live SDK for Android, and then click OK.
+6. In the Projects box, select the LiveSdk check box.
+7. With the Copy projects into workspace check box selected, click Finish.
+  Eclipse adds the LiveSdk project to the Package Explorer pane and then
+  compiles the Android API source code in the background.
+8. You can now reference the compiled Android API source code from your Eclipse
+  Android projects.
+
+  
+To reference the compiled Android API source code in an Eclipse Android
+project
+1. In Eclipse, display the Package Explorer pane, if it is not already visible.
+2. Right-click your project's name, and then click Properties.
+3. In the list of project properties, click Android.
+4. In the Library area, click Add.
+5. Click LiveSdk and then click OK.
+6. Click OK. Eclipse sets a reference to the compiled Android API source code
+  project, and you can now call the Live Connect Android API from your own
+  Android project.
+
+Note: Before you run your project, you must add the Internet permission to your
+      project's manifest, as shown in the following steps. If you don't add the
+      Internet permission, your app may have problems accessing Live Connect
+      web services later.
+1. With your project open, in the Package Explorer pane, open the AndroidManifest.xml file.
+2. In the editor, click the Permissions tab.
+3. Click Add.
+4. Click Uses Permission, and then click OK.
+5. the Name list, click android.permission.INTERNET.
+6. Save the AndroidManifest.xml file.
+
+Notes:
+The Java Compiler must be version 1.6 or higher.
+
+3. Documentation
+
+Visit: http://dev.live.com and click the "Documentation" link. 
+
+4. Known issues:
+
+1) Logout does not clear cookies on oauth.live.com.
+

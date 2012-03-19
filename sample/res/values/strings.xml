@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Live Connect Sample</string>
+    <string name="response_display">Response</string>
+    <string name="submit_display">Submit</string>
+    <string name="http_method_prompt">HTTP Method</string>
+    <string name="name">Name</string>
+    <string name="description">Description</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="sign_in">Sign in</string>
+    <string name="no_files">No files.</string>
+    <string name="path_hint">e.g., me/skydrive</string>
+    <string name="request_body">Request Body</string>
+    <string name="request_body_hint">e.g., { \"name\": \"My new object\" }</string>
+    <string name="skydrive_icon_description">An icon that represents the SkyDrive item.</string>
+    <string name="no_contacts">No contacts.</string>
+    <string name="no_skydrive_items">No SkyDrive items.</string>
+    <string name="request_path">Request Path</string>
+    <string name="request_method">Request Method</string>
+    <string name="sign_out">Sign out</string>
+    <string name="welcome">Welcome to the Live SDK for Android Sample Application!</string>
+    <string name="begin">Begin by hitting in the \"Sign in\" button.</string>
+</resources>
