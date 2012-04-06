@@ -311,9 +311,9 @@ class AuthorizationRequest implements ObservableOAuthRequest, OAuthRequestObserv
      * passed in listener when it is completed.
      */
     public void execute() {
-        String displayType = OAuth.DisplayType.TOUCH.toString().toLowerCase();
+        String displayType = OAuth.DisplayType.HOST.toString().toLowerCase();
         String responseType = OAuth.ResponseType.CODE.toString().toLowerCase();
-        String theme = OAuth.ThemeType.DEFAULT.toString().toLowerCase();
+        String theme = OAuth.ThemeType.ANDROID.toString().toLowerCase();
         String locale = Locale.getDefault().toString();
         Uri requestUri = Config.INSTANCE.getOAuthAuthorizeUri()
                                         .buildUpon()

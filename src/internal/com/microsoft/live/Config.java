@@ -23,10 +23,10 @@ enum Config {
     Config() {
         apiUri = Uri.parse("https://apis.live.net/v5.0");
         apiVersion = "5.0";
-        oAuthAuthorizeUri = Uri.parse("https://oauth.live.com/authorize");
-        oAuthDesktopUri = Uri.parse("https://oauth.live.com/desktop");
-        oAuthLogoutUri = Uri.parse("https://login.live.com/logout.srf");
-        oAuthTokenUri = Uri.parse("https://oauth.live.com/token");
+        oAuthAuthorizeUri = Uri.parse("https://login.live.com/oauth20_authorize.srf");
+        oAuthDesktopUri = Uri.parse("https://login.live.com/oauth20_desktop.srf");
+        oAuthLogoutUri = Uri.parse("https://login.live.com/oauth20_logout.srf");
+        oAuthTokenUri = Uri.parse("https://login.live.com/oauth20_token.srf");
     }
 
     public Uri getApiUri() {

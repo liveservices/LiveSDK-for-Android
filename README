@@ -59,7 +59,6 @@ Visit: http://dev.live.com and click the "Documentation" link.
 
 4. Known issues:
 
-1) Logout does not clear cookies on oauth.live.com.
-2) Login dialog is destroyed on screen rotation if the Activity is not set to
+1) Login dialog is destroyed on screen rotation if the Activity is not set to
    ignore orientation changes in AndroidManifest.xml.
 
