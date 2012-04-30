@@ -57,7 +57,14 @@ The Java Compiler must be version 1.6 or higher.
 
 Visit: http://dev.live.com and click the "Documentation" link. 
 
-4. Known issues:
+4. Sample project
+There is a sample project located in the sample directory. Using eclipse this project can be added
+using the File > Import > General > Existing Projects into Workspace wizard. Before the project can be
+properly used, the static variable com.microsoft.live.sample.Config.CLIENT_ID (see Config.java) must
+be changed to your own client ID. For help on obtaining a client ID, please see
+http://go.microsoft.com/fwlink/?LinkId=220871 
+
+5. Known issues:
 
 1) Login dialog is destroyed on screen rotation if the Activity is not set to
    ignore orientation changes in AndroidManifest.xml.
