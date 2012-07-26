@@ -1,3 +1,8 @@
+Note:
+-----
+There is a known issue with Live SDK for Android, please resync your repo to address the issue. For more info please visit
+http://social.msdn.microsoft.com/Forums/en-US/messengerconnect/thread/6fb7335e-703b-477f-8dbb-00fda1b4aec0
+
 Live SDK for Android 
 ====================
 
@@ -75,4 +80,5 @@ http://go.microsoft.com/fwlink/?LinkId=220871
 
 1) Login dialog is destroyed on screen rotation if the Activity is not set to
    ignore orientation changes in AndroidManifest.xml.
+
 
