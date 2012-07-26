@@ -16,7 +16,6 @@ package com.microsoft.live;
 final class OAuth {
 
     public enum DisplayType {
-        HOST,
         NONE,
         PAGE,
         POPUP,
@@ -88,7 +87,6 @@ final class OAuth {
     }
 
     public enum ThemeType {
-        ANDROID,
         DARK,
         LIGHT,
         DEFAULT;
