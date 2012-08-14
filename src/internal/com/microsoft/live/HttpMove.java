@@ -22,7 +22,7 @@ class HttpMove extends HttpEntityEnclosingRequestBase {
 
     /**
      * Constructs a new HttpMove with the given uri and initializes its member variables.
-     * 
+     *
      * @param uri of the request
      */
     public HttpMove(String uri) {

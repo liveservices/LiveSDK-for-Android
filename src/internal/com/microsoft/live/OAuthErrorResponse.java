@@ -22,7 +22,7 @@ class OAuthErrorResponse implements OAuthResponse {
      * error_uri are optional
      */
     public static class Builder {
-        private ErrorType error;
+        private final ErrorType error;
         private String errorDescription;
         private String errorUri;
 
@@ -120,14 +120,14 @@ class OAuthErrorResponse implements OAuthResponse {
     /**
      * OPTIONAL.  A URI identifying a human-readable web page with
      * information about the error, used to provide the client
-     * developer with additional information about the error. 
+     * developer with additional information about the error.
      */
     private final String errorUri;
 
     /**
      * OAuthErrorResponse constructor. It is private to enforce
      * the use of the Builder.
-     * 
+     *
      * @param builder to use to construct the object.
      */
     private OAuthErrorResponse(Builder builder) {

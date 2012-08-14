@@ -75,29 +75,29 @@ class OAuthSuccessfulResponse implements OAuthResponse {
 
     public static OAuthSuccessfulResponse createFromFragment(
             Map<String, String> fragmentParameters) throws LiveAuthException {
-        final String accessToken = fragmentParameters.get(OAuth.ACCESS_TOKEN);
-        final String tokenTypeString = fragmentParameters.get(OAuth.TOKEN_TYPE);
+        String accessToken = fragmentParameters.get(OAuth.ACCESS_TOKEN);
+        String tokenTypeString = fragmentParameters.get(OAuth.TOKEN_TYPE);
 
         // must have accessToken and tokenTypeString to be a valid OAuthSuccessfulResponse
         assert accessToken != null;
         assert tokenTypeString != null;
 
-        final TokenType tokenType;
+        TokenType tokenType;
         try {
             tokenType = TokenType.valueOf(tokenTypeString.toUpperCase());
-        } catch (final IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new LiveAuthException(ErrorMessages.SERVER_ERROR, e);
         }
 
-        final OAuthSuccessfulResponse.Builder builder =
+        OAuthSuccessfulResponse.Builder builder =
                 new OAuthSuccessfulResponse.Builder(accessToken, tokenType);
 
-        final String authenticationToken = fragmentParameters.get(OAuth.AUTHENTICATION_TOKEN);
+        String authenticationToken = fragmentParameters.get(OAuth.AUTHENTICATION_TOKEN);
         if (authenticationToken != null) {
             builder.authenticationToken(authenticationToken);
         }
 
-        final String expiresInString = fragmentParameters.get(OAuth.EXPIRES_IN);
+        String expiresInString = fragmentParameters.get(OAuth.EXPIRES_IN);
         if (expiresInString != null) {
             final int expiresIn;
             try {
@@ -109,7 +109,7 @@ class OAuthSuccessfulResponse implements OAuthResponse {
             builder.expiresIn(expiresIn);
         }
 
-        final String scope = fragmentParameters.get(OAuth.SCOPE);
+        String scope = fragmentParameters.get(OAuth.SCOPE);
         if (scope != null) {
             builder.scope(scope);
         }

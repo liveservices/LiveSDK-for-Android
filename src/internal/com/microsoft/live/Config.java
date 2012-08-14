@@ -9,7 +9,9 @@ package com.microsoft.live;
 import android.net.Uri;
 import android.text.TextUtils;
 
-/** Config is a singleton class that contains the values used throughout the SDK. */
+/**
+ * Config is a singleton class that contains the values used throughout the SDK.
+ */
 enum Config {
     INSTANCE;
 
@@ -21,6 +23,7 @@ enum Config {
     private Uri oAuthTokenUri;
 
     Config() {
+        // initialize default values for constants
         apiUri = Uri.parse("https://apis.live.net/v5.0");
         apiVersion = "5.0";
         oAuthAuthorizeUri = Uri.parse("https://login.live.com/oauth20_authorize.srf");

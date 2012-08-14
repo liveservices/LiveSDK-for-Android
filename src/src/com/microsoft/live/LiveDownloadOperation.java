@@ -10,8 +10,11 @@ import java.io.InputStream;
 
 import android.text.TextUtils;
 
+/**
+ * Represents data returned from a download call to the Live Connect Representational State
+ * Transfer (REST) API.
+ */
 public class LiveDownloadOperation {
-
     static class Builder {
         private ApiRequestAsync<InputStream> apiRequestAsync;
         private final String method;
@@ -79,22 +82,37 @@ public class LiveDownloadOperation {
         }
     }
 
+    /**
+     * @return The type of HTTP method used to make the call.
+     */
     public String getMethod() {
         return this.method;
     }
 
+    /**
+     * @return The length of the stream.
+     */
     public int getContentLength() {
         return this.contentLength;
     }
 
+    /**
+     * @return The path for the stream object.
+     */
     public String getPath() {
         return this.path;
     }
 
+    /**
+     * @return The stream object that contains the downloaded file.
+     */
     public InputStream getStream() {
         return this.stream;
     }
 
+    /**
+     * @return The user state.
+     */
     public Object getUserState() {
         return this.userState;
     }

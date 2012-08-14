@@ -510,13 +510,12 @@ public class LiveAuthClient {
         for (String cookieKey : cookieKeys) {
             String value = TextUtils.join("", new String[] {
                cookieKey,
-               "=; expires=Thu, 30-Oct-1980 16:00:00 GMT; domain=",
+               "=; expires=Thu, 30-Oct-1980 16:00:00 GMT;domain=",
                domain,
-               "; path=/; version=1"
+               ";path=/;version=1"
             });
-	
+
             manager.setCookie(url, value);
-            manager.setCookie(url, value + "; Secure");
         }
 
         cookieSyncManager.sync();

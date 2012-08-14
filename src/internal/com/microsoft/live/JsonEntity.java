@@ -14,7 +14,6 @@ import org.json.JSONObject;
 
 /**
  * JsonEntity is an Entity that contains a Json body
- *
  */
 class JsonEntity extends StringEntity {
 

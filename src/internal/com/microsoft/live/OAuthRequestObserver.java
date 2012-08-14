@@ -6,17 +6,20 @@
 
 package com.microsoft.live;
 
-/** An observer of an OAuth Request. It will be notified of an Exception or of a Response. */
+/**
+ * An observer of an OAuth Request. It will be notified of an Exception or of a Response.
+ */
 interface OAuthRequestObserver {
     /**
-     * Callback used on an exception
+     * Callback used on an exception.
      *
      * @param exception
      */
     public void onException(LiveAuthException exception);
 
     /**
-     * Callback used on a response
+     * Callback used on a response.
+     *
      * @param response
      */
     public void onResponse(OAuthResponse response);

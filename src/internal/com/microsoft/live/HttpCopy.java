@@ -22,7 +22,7 @@ class HttpCopy extends HttpEntityEnclosingRequestBase {
 
     /**
      * Constructs a new HttpCopy with the given uri and initializes its member variables.
-     * 
+     *
      * @param uri of the request
      */
     public HttpCopy(String uri) {

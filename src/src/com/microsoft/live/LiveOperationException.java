@@ -6,6 +6,10 @@
 
 package com.microsoft.live;
 
+/**
+ * Represents errors that occur when making requests to the Representational State Transfer
+ * (REST) API.
+ */
 public class LiveOperationException extends Exception {
 
     private static final long serialVersionUID = 4630383031651156731L;

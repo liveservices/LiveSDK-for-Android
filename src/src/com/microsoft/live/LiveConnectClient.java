@@ -262,6 +262,7 @@ public class LiveConnectClient {
         public static final String DESTINATION = "destination";
         public static final String FILE = "file";
         public static final String FILENAME = "filename";
+        public static final String OVERWRITE = "overwrite";
         public static final String PATH = "path";
         public static final String SESSION = "session";
 
@@ -332,12 +333,14 @@ public class LiveConnectClient {
         }
     }
 
-    private static HttpClient HTTP_CLIENT;
     private static int BUFFER_SIZE = 1 << 10;
     private static int CONNECT_TIMEOUT_IN_MS = 30 * 1000;
 
     /** The key used for HTTP MOVE and HTTP COPY requests. */
     private static final String DESTINATION_KEY = "destination";
+
+    private static volatile HttpClient HTTP_CLIENT;
+    private static Object HTTP_CLIENT_LOCK = new Object();
 
     /**
      * A LiveDownloadOperationListener that does nothing on each of the call backs.
@@ -352,7 +355,6 @@ public class LiveConnectClient {
      * to avoid if (listener == null) checks.
      */
     private static final LiveOperationListener NULL_OPERATION_LISTENER;
-
 
     /**
      * A LiveUploadOperationListener that does nothing on each of the call backs.
@@ -499,22 +501,31 @@ public class LiveConnectClient {
     private static HttpClient getHttpClient() {
         // The LiveConnectClients can share one HttpClient with a ThreadSafeConnManager.
         if (HTTP_CLIENT == null) {
-            HttpParams params = new BasicHttpParams();
-            HttpConnectionParams.setConnectionTimeout(params, CONNECT_TIMEOUT_IN_MS);
-            HttpConnectionParams.setSoTimeout(params, SOCKET_TIMEOUT_IN_MS);
+            synchronized (HTTP_CLIENT_LOCK) {
+                if (HTTP_CLIENT == null) {
+                    HttpParams params = new BasicHttpParams();
+                    HttpConnectionParams.setConnectionTimeout(params, CONNECT_TIMEOUT_IN_MS);
+                    HttpConnectionParams.setSoTimeout(params, SOCKET_TIMEOUT_IN_MS);
 
-            ConnManagerParams.setMaxTotalConnections(params, 100);
-            HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+                    ConnManagerParams.setMaxTotalConnections(params, 100);
+                    HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 
-            SchemeRegistry schemeRegistry = new SchemeRegistry();
-            schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-            schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+                    SchemeRegistry schemeRegistry = new SchemeRegistry();
+                    schemeRegistry.register(new Scheme("http",
+                                                       PlainSocketFactory.getSocketFactory(),
+                                                       80));
+                    schemeRegistry.register(new Scheme("https",
+                                                       SSLSocketFactory.getSocketFactory(),
+                                                       443));
 
-            // Create an HttpClient with the ThreadSafeClientConnManager.
-            // This connection manager must be used if more than one thread will
-            // be using the HttpClient, which is a common scenario.
-            ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
-            HTTP_CLIENT = new DefaultHttpClient(cm, params);
+                    // Create an HttpClient with the ThreadSafeClientConnManager.
+                    // This connection manager must be used if more than one thread will
+                    // be using the HttpClient, which is a common scenario.
+                    ClientConnectionManager cm =
+                            new ThreadSafeClientConnManager(params, schemeRegistry);
+                    HTTP_CLIENT = new DefaultHttpClient(cm, params);
+                }
+            }
         }
 
         return HTTP_CLIENT;
@@ -1362,36 +1373,39 @@ public class LiveConnectClient {
      * Uploads a resource by performing a synchronous HTTP PUT on the Live Connect REST API that
      * returns the response as an {@link InputStream}.
      *
-     * @param path location to upload to
-     * @param filename name of the new resource
-     * @param file contents of the upload
+     * If a file with the same name exists the upload will fail.
+     *
+     * @param path location to upload to.
+     * @param filename name of the new resource.
+     * @param file contents of the upload.
      * @return a LiveOperation that contains the JSON result.
      * @throws LiveOperationException if there is an error during the execution of the request.
      */
     public LiveOperation upload(String path,
                                 String filename,
                                 InputStream file) throws LiveOperationException {
-        return this.upload(path, filename, file, false);
+        return this.upload(path, filename, file, OverwriteOption.DoNotOverwrite);
     }
 
     /**
      * Uploads a resource by performing a synchronous HTTP PUT on the Live Connect REST API that
      * returns the response as an {@link InputStream}.
      *
-     * @param path location to upload to
-     * @param filename name of the new resource
-     * @param file contents of the upload
-     * @param overwriteExisting overwrite the existing resource if true
+     * @param path location to upload to.
+     * @param filename name of the new resource.
+     * @param file contents of the upload.
+     * @param overwrite specifies what to do when a file with the same name exists.
      * @return a LiveOperation that contains the JSON result.
      * @throws LiveOperationException if there is an error during the execution of the request.
      */
     public LiveOperation upload(String path,
                                 String filename,
                                 InputStream file,
-                                boolean overwriteExisting) throws LiveOperationException {
+                                OverwriteOption overwrite) throws LiveOperationException {
         assertValidPath(path);
         LiveConnectUtils.assertNotNullOrEmpty(filename, ParamNames.FILENAME);
         LiveConnectUtils.assertNotNull(file, ParamNames.FILE);
+        LiveConnectUtils.assertNotNull(overwrite, ParamNames.OVERWRITE);
 
         // Currently, the API Service does not support chunked uploads,
         // so we must know the length of the InputStream, before we send it.
@@ -1407,23 +1421,47 @@ public class LiveConnectClient {
                                                     filename,
                                                     new ByteArrayInputStream(bytes),
                                                     bytes.length,
-                                                    overwriteExisting);
+                                                    overwrite);
         return execute(request);
     }
 
+    /**
+     * Uploads a resource by performing a synchronous HTTP PUT on the Live Connect REST API that
+     * returns the response as an {@link InputStream}.
+     *
+     * If a file with the same name exists the upload will fail.
+     *
+     * @param path location to upload to.
+     * @param filename name of the new resource.
+     * @param file contents of the upload.
+     * @return a LiveOperation that contains the JSON result.
+     * @throws LiveOperationException if there is an error during the execution of the request.
+     */
     public LiveOperation upload(String path,
                                 String filename,
                                 File file) throws LiveOperationException {
-        return this.upload(path, filename, file, false);
+        return this.upload(path, filename, file, OverwriteOption.DoNotOverwrite);
     }
 
+    /**
+     * Uploads a resource by performing a synchronous HTTP PUT on the Live Connect REST API that
+     * returns the response as an {@link InputStream}.
+     *
+     * @param path location to upload to.
+     * @param filename name of the new resource.
+     * @param file contents of the upload.
+     * @param overwrite specifies what to do when a file with the same name exists.
+     * @return a LiveOperation that contains the JSON result.
+     * @throws LiveOperationException if there is an error during the execution of the request.
+     */
     public LiveOperation upload(String path,
                                 String filename,
                                 File file,
-                                boolean overwriteExisting) throws LiveOperationException {
+                                OverwriteOption overwrite) throws LiveOperationException {
         assertValidPath(path);
         LiveConnectUtils.assertNotNullOrEmpty(filename, ParamNames.FILENAME);
         LiveConnectUtils.assertNotNull(file, ParamNames.FILE);
+        LiveConnectUtils.assertNotNull(overwrite, ParamNames.OVERWRITE);
 
         InputStream is = null;
         try {
@@ -1437,7 +1475,7 @@ public class LiveConnectClient {
                                           filename,
                                           is,
                                           file.length(),
-                                          overwriteExisting);
+                                          overwrite);
         return execute(request);
     }
 
@@ -1453,10 +1491,10 @@ public class LiveConnectClient {
      * {@link LiveUploadOperationListener#onUploadFailed(LiveOperationException, LiveOperation)}
      * will be called. This method will NOT be called on the main/UI thread.
      *
-     * @param path location to upload to
-     * @param filename name of the new resource
-     * @param overwriteExisting overwrite the existing resource if true
-     * @param file contents of the upload
+     * @param path location to upload to.
+     * @param filename name of the new resource.
+     * @param file contents of the upload.
+     * @param overwrite specifies what to do when a file with the same name exists.
      * @param listener called on completion, on progress, or on an error of the upload request.
      * @param userState arbitrary object that is used to determine the caller of the method.
      * @return the LiveOperation associated with the request.
@@ -1464,12 +1502,13 @@ public class LiveConnectClient {
     public LiveOperation uploadAsync(String path,
                                      String filename,
                                      InputStream file,
-                                     boolean overwriteExisting,
+                                     OverwriteOption overwrite,
                                      LiveUploadOperationListener listener,
                                      Object userState) {
         assertValidPath(path);
         LiveConnectUtils.assertNotNullOrEmpty(filename, ParamNames.FILENAME);
         LiveConnectUtils.assertNotNull(file, ParamNames.FILE);
+        LiveConnectUtils.assertNotNull(overwrite, ParamNames.OVERWRITE);
         if (listener == null) {
             listener = NULL_UPLOAD_OPERATION_LISTENER;
         }
@@ -1492,7 +1531,7 @@ public class LiveConnectClient {
                                           filename,
                                           new ByteArrayInputStream(bytes),
                                           bytes.length,
-                                          overwriteExisting);
+                                          overwrite);
         } catch (LiveOperationException e) {
             return handleException(UploadRequest.METHOD, path, e, listener, userState);
         }
@@ -1525,10 +1564,11 @@ public class LiveConnectClient {
      * {@link LiveUploadOperationListener#onUploadFailed(LiveOperationException, LiveOperation)}
      * will be called. This method will NOT be called on the main/UI thread.
      *
+     * If a file with the same name exists the upload will fail.
+     *
      * @param path location to upload to.
      * @param filename name of the new resource.
-     * @param overwriteExisting overwrite the existing resource if true.
-     * @param file contents of the upload.
+     * @param input contents of the upload.
      * @param listener called on completion, on progress, or on an error of the upload request.
      * @return the LiveOperation associated with the request.
      */
@@ -1551,9 +1591,10 @@ public class LiveConnectClient {
      * {@link LiveUploadOperationListener#onUploadFailed(LiveOperationException, LiveOperation)}
      * will be called. This method will NOT be called on the main/UI thread.
      *
+     * If a file with the same name exists the upload will fail.
+     *
      * @param path location to upload to.
      * @param filename name of the new resource.
-     * @param overwriteExisting overwrite the existing resource if true.
      * @param file contents of the upload.
      * @param listener called on completion, on progress, or on an error of the upload request.
      * @param userState arbitrary object that is used to determine the caller of the method.
@@ -1564,9 +1605,35 @@ public class LiveConnectClient {
                                      InputStream input,
                                      LiveUploadOperationListener listener,
                                      Object userState) {
-        return this.uploadAsync(path, filename, input, false, listener, userState);
+        return this.uploadAsync(
+                path,
+                filename,
+                input,
+                OverwriteOption.DoNotOverwrite,
+                listener,
+                userState);
     }
 
+    /**
+     * Uploads a resource by performing an asynchronous HTTP PUT on the Live Connect REST API that
+     * returns the response as an {@link InputStream}.
+     *
+     * {@link LiveUploadOperationListener#onUploadCompleted(LiveOperation)} will be called on
+     * success.
+     * {@link LiveUploadOperationListener#onUploadProgress(int, int, LiveOperation) will be called
+     * on upload progress. Both of these methods will be called on the main/UI thread.
+     * Otherwise,
+     * {@link LiveUploadOperationListener#onUploadFailed(LiveOperationException, LiveOperation)}
+     * will be called. This method will NOT be called on the main/UI thread.
+     *
+     * If a file with the same name exists the upload will fail.
+     *
+     * @param path location to upload to.
+     * @param filename name of the new resource.
+     * @param file contents of the upload.
+     * @param listener called on completion, on progress, or on an error of the upload request.
+     * @return the LiveOperation associated with the request.
+     */
     public LiveOperation uploadAsync(String path,
                                      String filename,
                                      File file,
@@ -1574,23 +1641,71 @@ public class LiveConnectClient {
         return this.uploadAsync(path, filename, file, listener, null);
     }
 
+    /**
+     * Uploads a resource by performing an asynchronous HTTP PUT on the Live Connect REST API that
+     * returns the response as an {@link InputStream}.
+     *
+     * {@link LiveUploadOperationListener#onUploadCompleted(LiveOperation)} will be called on
+     * success.
+     * {@link LiveUploadOperationListener#onUploadProgress(int, int, LiveOperation) will be called
+     * on upload progress. Both of these methods will be called on the main/UI thread.
+     * Otherwise,
+     * {@link LiveUploadOperationListener#onUploadFailed(LiveOperationException, LiveOperation)}
+     * will be called. This method will NOT be called on the main/UI thread.
+     *
+     * If a file with the same name exists the upload will fail.
+     *
+     * @param path location to upload to.
+     * @param filename name of the new resource.
+     * @param file contents of the upload.
+     * @param listener called on completion, on progress, or on an error of the upload request.
+     * @param userState arbitrary object that is used to determine the caller of the method.
+     * @return the LiveOperation associated with the request.
+     */
     public LiveOperation uploadAsync(String path,
                                      String filename,
                                      File file,
                                      LiveUploadOperationListener listener,
                                      Object userState) {
-        return this.uploadAsync(path, filename, file, false, listener, userState);
+        return this.uploadAsync(
+                path,
+                filename,
+                file,
+                OverwriteOption.DoNotOverwrite,
+                listener,
+                userState);
     }
 
+    /**
+     * Uploads a resource by performing an asynchronous HTTP PUT on the Live Connect REST API that
+     * returns the response as an {@link InputStream}.
+     *
+     * {@link LiveUploadOperationListener#onUploadCompleted(LiveOperation)} will be called on
+     * success.
+     * {@link LiveUploadOperationListener#onUploadProgress(int, int, LiveOperation) will be called
+     * on upload progress. Both of these methods will be called on the main/UI thread.
+     * Otherwise,
+     * {@link LiveUploadOperationListener#onUploadFailed(LiveOperationException, LiveOperation)}
+     * will be called. This method will NOT be called on the main/UI thread.
+     *
+     * @param path location to upload to.
+     * @param filename name of the new resource.
+     * @param file contents of the upload.
+     * @param overwrite specifies what to do when a file with the same name exists.
+     * @param listener called on completion, on progress, or on an error of the upload request.
+     * @param userState arbitrary object that is used to determine the caller of the method.
+     * @return the LiveOperation associated with the request.
+     */
     public LiveOperation uploadAsync(String path,
                                      String filename,
                                      File file,
-                                     boolean overwriteExisting,
+                                     OverwriteOption overwrite,
                                      LiveUploadOperationListener listener,
                                      Object userState) {
         assertValidPath(path);
         LiveConnectUtils.assertNotNullOrEmpty(filename, ParamNames.FILENAME);
         LiveConnectUtils.assertNotNull(file, ParamNames.FILE);
+        LiveConnectUtils.assertNotNull(overwrite, ParamNames.OVERWRITE);
         if (listener == null) {
             listener = NULL_UPLOAD_OPERATION_LISTENER;
         }
@@ -1601,7 +1716,7 @@ public class LiveConnectClient {
                                           filename,
                                           new FileInputStream(file),
                                           file.length(),
-                                          overwriteExisting);
+                                          overwrite);
         } catch (LiveOperationException e) {
             return handleException(UploadRequest.METHOD, path, e, listener, userState);
         } catch (FileNotFoundException e) {
@@ -1697,7 +1812,7 @@ public class LiveConnectClient {
                                               String filename,
                                               InputStream is,
                                               long length,
-                                              boolean overwrite) throws LiveOperationException {
+                                              OverwriteOption overwrite) throws LiveOperationException {
         assert !TextUtils.isEmpty(path);
         assert !TextUtils.isEmpty(filename);
         assert is != null;

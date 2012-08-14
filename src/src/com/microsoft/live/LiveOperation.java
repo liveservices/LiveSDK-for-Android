@@ -10,8 +10,11 @@ import org.json.JSONObject;
 
 import android.text.TextUtils;
 
+/**
+ * Represents data returned from the Live Connect Representational State Transfer (REST) API
+ * services.
+ */
 public class LiveOperation {
-
     static class Builder {
         private ApiRequestAsync<JSONObject> apiRequestAsync;
         private final String method;
@@ -70,6 +73,7 @@ public class LiveOperation {
         this.userState = builder.userState;
     }
 
+    /** Cancels the pending request. */
     public void cancel() {
         final boolean isCancelable = this.apiRequestAsync != null;
         if (isCancelable) {
@@ -77,16 +81,25 @@ public class LiveOperation {
         }
     }
 
+    /**
+     * @return The type of HTTP method used to make the call.
+     */
     public String getMethod() {
         return this.method;
     }
 
+    /**
+     * @return The path to which the call was made.
+     */
     public String getPath() {
         return this.path;
     }
 
+    /**
+     * @return The raw result of the operation in the requested format.
+     */
     public String getRawResult() {
-        final JSONObject result = this.getResult();
+        JSONObject result = this.getResult();
         if (result == null) {
             return null;
         }
@@ -94,10 +107,16 @@ public class LiveOperation {
         return result.toString();
     }
 
+    /**
+     * @return The JSON object that is the result of the requesting operation.
+     */
     public JSONObject getResult() {
         return this.result;
     }
 
+    /**
+     * @return The user state that was passed in.
+     */
     public Object getUserState() {
         return this.userState;
     }

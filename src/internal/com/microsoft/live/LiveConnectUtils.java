@@ -13,7 +13,7 @@ import android.text.TextUtils;
  * LiveConnectUtils is a non-instantiable utility class that contains various helper
  * methods and constants.
  */
-public final class LiveConnectUtils {
+final class LiveConnectUtils {
 
     /**
      * Checks to see if the passed in Object is null, and throws a

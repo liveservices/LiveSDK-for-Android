@@ -11,7 +11,6 @@ package com.microsoft.live;
  * used in for errors and exceptions.
  */
 final class ErrorMessages {
-
     public static final String ABSOLUTE_PARAMETER =
             "Input parameter '%1$s' is invalid. '%1$s' cannot be absolute.";
     public static final String CLIENT_ERROR =

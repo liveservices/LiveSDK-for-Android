@@ -21,20 +21,28 @@ class UploadRequest extends EntityEnclosingApiRequest<JSONObject> {
 
     public static final String METHOD = HttpPut.METHOD_NAME;
 
+    private static final String FILE_PATH = "file.";
     private static final String ERROR_KEY = "error";
     private static final String UPLOAD_LOCATION_KEY = "upload_location";
 
     private HttpUriRequest currentRequest;
     private final String filename;
     private final boolean isRelativePath;
-    private final boolean overwrite;
+
+    /**
+     * true if the given path refers to a File Object
+     * (i.e., the path begins with "/file").
+     */
+    private final boolean isFileUpload;
+
+    private final OverwriteOption overwrite;
 
     public UploadRequest(LiveConnectSession session,
                          HttpClient client,
                          String path,
                          HttpEntity entity,
                          String filename,
-                         boolean overwrite) {
+                         OverwriteOption overwrite) {
         super(session,
               client,
               JsonResponseHandler.INSTANCE,
@@ -47,7 +55,11 @@ class UploadRequest extends EntityEnclosingApiRequest<JSONObject> {
 
         this.filename = filename;
         this.overwrite = overwrite;
-        this.isRelativePath = Uri.parse(path).isRelative();
+        Uri uriPath = Uri.parse(path);
+        this.isRelativePath = uriPath.isRelative();
+
+        String lowerCasePath = uriPath.getPath().toLowerCase();
+        this.isFileUpload = lowerCasePath.indexOf(FILE_PATH) != -1;
     }
 
     @Override
@@ -87,11 +99,13 @@ class UploadRequest extends EntityEnclosingApiRequest<JSONObject> {
             uploadRequestUri = this.requestUri;
         }
 
-        // Add the file name to the upload location
-        // and don't forget to set the overwrite query parameter
-        uploadRequestUri.appendPath(this.filename);
-        uploadRequestUri.appendQueryParameter(QueryParameters.OVERWRITE,
-                                              Boolean.toString(this.overwrite));
+        if (!this.isFileUpload) {
+            // if it is not a file upload it is a folder upload and we must
+            // add the file name to the upload location
+            // and don't forget to set the overwrite query parameter
+            uploadRequestUri.appendPath(this.filename);
+            this.overwrite.appendQueryParameter(uploadRequestUri);
+        }
 
         HttpPut uploadRequest = new HttpPut(uploadRequestUri.toString());
         uploadRequest.setEntity(this.entity);

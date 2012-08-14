@@ -25,9 +25,7 @@ class GetRequest extends ApiRequest<JSONObject> {
      * @param client to perform Http requests on
      * @param path of the request
      */
-    public GetRequest(LiveConnectSession session,
-                      HttpClient client,
-                      String path) {
+    public GetRequest(LiveConnectSession session, HttpClient client, String path) {
         super(session, client, JsonResponseHandler.INSTANCE, path);
     }
 

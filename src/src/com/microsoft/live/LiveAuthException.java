@@ -6,6 +6,9 @@
 
 package com.microsoft.live;
 
+/**
+ * Indicates that an exception occurred during the Auth process.
+ */
 public class LiveAuthException extends Exception {
 
     private static final long serialVersionUID = 3368677530670470856L;
@@ -44,10 +47,16 @@ public class LiveAuthException extends Exception {
         this.errorUri = errorUri;
     }
 
+    /**
+     * @return Returns the authentication error.
+     */
     public String getError() {
         return this.error;
     }
 
+    /**
+     * @return Returns the error URI.
+     */
     public String getErrorUri() {
         return this.errorUri;
     }

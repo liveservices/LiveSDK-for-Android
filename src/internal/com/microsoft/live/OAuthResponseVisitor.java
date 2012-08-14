@@ -12,13 +12,15 @@ package com.microsoft.live;
 interface OAuthResponseVisitor {
 
     /**
-     * Called when an OAuthSuccessfulResponse is visited
+     * Called when an OAuthSuccessfulResponse is visited.
+     *
      * @param response being visited
      */
     public void visit(OAuthSuccessfulResponse response);
 
     /**
-     * Called when an OAuthErrorResponse is being visited
+     * Called when an OAuthErrorResponse is being visited.
+     *
      * @param response being visited
      */
     public void visit(OAuthErrorResponse response);
