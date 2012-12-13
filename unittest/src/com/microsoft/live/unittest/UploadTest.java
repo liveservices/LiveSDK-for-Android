@@ -38,7 +38,6 @@ public class UploadTest extends ApiTest<LiveOperation, LiveUploadOperationListen
         FILE = new ByteArrayInputStream("File contents".getBytes());
     }
 
-
     public void testAsyncFileNull() {
         try {
             this.liveConnectClient.uploadAsync(Paths.ME_SKYDRIVE,

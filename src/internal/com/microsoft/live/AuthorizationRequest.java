@@ -311,9 +311,8 @@ class AuthorizationRequest implements ObservableOAuthRequest, OAuthRequestObserv
      * passed in listener when it is completed.
      */
     public void execute() {
-        String displayType = OAuth.DisplayType.TOUCH.toString().toLowerCase();
+        String displayType = this.getDisplayParameter();
         String responseType = OAuth.ResponseType.CODE.toString().toLowerCase();
-        String theme = OAuth.ThemeType.DEFAULT.toString().toLowerCase();
         String locale = Locale.getDefault().toString();
         Uri requestUri = Config.INSTANCE.getOAuthAuthorizeUri()
                                         .buildUpon()
@@ -322,7 +321,6 @@ class AuthorizationRequest implements ObservableOAuthRequest, OAuthRequestObserv
                                         .appendQueryParameter(OAuth.DISPLAY, displayType)
                                         .appendQueryParameter(OAuth.RESPONSE_TYPE, responseType)
                                         .appendQueryParameter(OAuth.LOCALE, locale)
-                                        .appendQueryParameter(OAuth.THEME, theme)
                                         .appendQueryParameter(OAuth.REDIRECT_URI, this.redirectUri)
                                         .build();
 
@@ -343,6 +341,17 @@ class AuthorizationRequest implements ObservableOAuthRequest, OAuthRequestObserv
     @Override
     public boolean removeObserver(OAuthRequestObserver observer) {
         return this.observable.removeObserver(observer);
+    }
+
+    /**
+     * Gets the display parameter by looking at the screen size of the activity.
+     * @return "android_phone" for phones and "android_tablet" for tablets.
+     */
+    private String getDisplayParameter() {
+        ScreenSize screenSize = ScreenSize.determineScreenSize(this.activity);
+        DeviceType deviceType = screenSize.getDeviceType();
+
+        return deviceType.getDisplayParameter().toString().toLowerCase();
     }
 
     /**

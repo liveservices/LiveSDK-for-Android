@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -28,6 +28,21 @@ import com.microsoft.live.sample.R;
 import com.microsoft.live.sample.util.JsonKeys;
 
 public class ViewProfileActivity extends Activity {
+
+    private class DownloadProfilePictureAsyncTask extends AsyncTask<LiveDownloadOperation, Void, BitmapDrawable> {
+        @Override
+        protected BitmapDrawable doInBackground(LiveDownloadOperation... params) {
+            return new BitmapDrawable(getResources(), params[0].getStream());
+        }
+
+        @Override
+        protected void onPostExecute(BitmapDrawable profilePicture) {
+            mNameTextView.setCompoundDrawablesWithIntrinsicBounds(profilePicture,
+                                                                  null,
+                                                                  null,
+                                                                  null);
+        }
+    }
 
     private TextView mNameTextView;
 
@@ -121,11 +136,9 @@ public class ViewProfileActivity extends Activity {
 
                     @Override
                     public void onDownloadCompleted(LiveDownloadOperation operation) {
-                        Drawable profilePicture = new BitmapDrawable(operation.getStream());
-                        mNameTextView.setCompoundDrawablesWithIntrinsicBounds(profilePicture,
-                                                                              null,
-                                                                              null,
-                                                                              null);
+                        DownloadProfilePictureAsyncTask task =
+                                new DownloadProfilePictureAsyncTask();
+                        task.execute(operation);
                     }
                 });
             }

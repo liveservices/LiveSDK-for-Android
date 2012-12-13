@@ -27,7 +27,6 @@ class UploadRequest extends EntityEnclosingApiRequest<JSONObject> {
 
     private HttpUriRequest currentRequest;
     private final String filename;
-    private final boolean isRelativePath;
 
     /**
      * true if the given path refers to a File Object
@@ -55,10 +54,8 @@ class UploadRequest extends EntityEnclosingApiRequest<JSONObject> {
 
         this.filename = filename;
         this.overwrite = overwrite;
-        Uri uriPath = Uri.parse(path);
-        this.isRelativePath = uriPath.isRelative();
 
-        String lowerCasePath = uriPath.getPath().toLowerCase();
+        String lowerCasePath = this.pathUri.getPath().toLowerCase();
         this.isFileUpload = lowerCasePath.indexOf(FILE_PATH) != -1;
     }
 
@@ -69,11 +66,11 @@ class UploadRequest extends EntityEnclosingApiRequest<JSONObject> {
 
     @Override
     public JSONObject execute() throws LiveOperationException {
-        Uri.Builder uploadRequestUri;
+        UriBuilder uploadRequestUri;
 
         // if the path was relative, we have to retrieve the upload location, because if we don't,
         // we will proxy the upload request, which is a waste of resources.
-        if (this.isRelativePath) {
+        if (this.pathUri.isRelative()) {
             JSONObject response = this.getUploadLocation();
 
             // We could of tried to get the upload location on an invalid path.
@@ -94,7 +91,14 @@ class UploadRequest extends EntityEnclosingApiRequest<JSONObject> {
                 throw new LiveOperationException(ErrorMessages.SERVER_ERROR, e);
             }
 
-            uploadRequestUri = Uri.parse(uploadLocation).buildUpon();
+            uploadRequestUri = UriBuilder.newInstance(Uri.parse(uploadLocation));
+
+            // The original path might have query parameters that were sent to the 
+            // the upload location request, and those same query parameters will need
+            // to be sent to the HttpPut upload request too. Also, the returned upload_location
+            // *could* have query parameters on it. We want to keep those intact and in front of the
+            // the client's query parameters.
+            uploadRequestUri.appendQueryString(this.pathUri.getQuery());
         } else {
             uploadRequestUri = this.requestUri;
         }
@@ -103,8 +107,8 @@ class UploadRequest extends EntityEnclosingApiRequest<JSONObject> {
             // if it is not a file upload it is a folder upload and we must
             // add the file name to the upload location
             // and don't forget to set the overwrite query parameter
-            uploadRequestUri.appendPath(this.filename);
-            this.overwrite.appendQueryParameter(uploadRequestUri);
+            uploadRequestUri.appendToPath(this.filename);
+            this.overwrite.appendQueryParameterOnTo(uploadRequestUri);
         }
 
         HttpPut uploadRequest = new HttpPut(uploadRequestUri.toString());
@@ -124,7 +128,7 @@ class UploadRequest extends EntityEnclosingApiRequest<JSONObject> {
      * Performs an HttpGet on the folder/file object to retrieve the upload_location
      *
      * @return
-     * @throws LiveOperationException
+     * @throws LiveOperationException if there was an error getting the getUploadLocation
      */
     private JSONObject getUploadLocation() throws LiveOperationException {
         this.currentRequest = new HttpGet(this.requestUri.toString());

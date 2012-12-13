@@ -16,10 +16,8 @@ package com.microsoft.live;
 final class OAuth {
 
     public enum DisplayType {
-        NONE,
-        PAGE,
-        POPUP,
-        TOUCH;
+        ANDROID_PHONE,
+        ANDROID_TABLET
     }
 
     public enum ErrorType {
@@ -86,15 +84,8 @@ final class OAuth {
         TOKEN;
     }
 
-    public enum ThemeType {
-        DARK,
-        LIGHT,
-        DEFAULT;
-    }
-
     public enum TokenType {
-        BEARER,
-        MAC;
+        BEARER
     }
 
     /**

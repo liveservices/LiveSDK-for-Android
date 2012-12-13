@@ -6,8 +6,6 @@
 
 package com.microsoft.live;
 
-import android.net.Uri.Builder;
-
 /**
  * Enum that specifies what to do during a naming conflict during an upload.
  */
@@ -37,7 +35,11 @@ public enum OverwriteOption {
         }
     };
 
-    void appendQueryParameter(Builder uri) {
+    /**
+     * Leaves any existing overwrite query parameter on appends this overwrite
+     * to the given UriBuilder.
+     */
+    void appendQueryParameterOnTo(UriBuilder uri) {
         uri.appendQueryParameter(QueryParameters.OVERWRITE, this.overwriteQueryParamValue());
     }
 

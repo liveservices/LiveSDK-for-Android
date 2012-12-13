@@ -22,7 +22,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.net.Uri;
-import android.net.Uri.Builder;
 import android.os.Build;
 import android.text.TextUtils;
 
@@ -41,19 +40,27 @@ abstract class ApiRequest<ResponseType> {
     public enum Redirects {
         SUPPRESS {
             @Override
-            protected void appendQueryParameter(Builder builder) {
-                appendSuppressRedirects(builder, Boolean.TRUE);
+            protected void setQueryParameterOn(UriBuilder builder) {
+                Redirects.setQueryParameterOn(builder, Boolean.TRUE);
             }
         }, UNSUPPRESSED {
             @Override
-            protected void appendQueryParameter(Builder builder) {
-                appendSuppressRedirects(builder, Boolean.FALSE);
+            protected void setQueryParameterOn(UriBuilder builder) {
+                Redirects.setQueryParameterOn(builder, Boolean.FALSE);
             }
         };
 
-        protected abstract void appendQueryParameter(Uri.Builder builder);
+        /**
+         * Sets the suppress_redirects query parameter by removing all existing ones
+         * and then appending it on the given UriBuilder.
+         */
+        protected abstract void setQueryParameterOn(UriBuilder builder);
 
-        private static void appendSuppressRedirects(Uri.Builder builder, Boolean value) {
+        private static void setQueryParameterOn(UriBuilder builder, Boolean value) {
+            // The Live SDK is designed to use our value of suppress_redirects.
+            // If it uses any other value it could cause issues. Remove any previously
+            // existing suppress_redirects and use ours.
+            builder.removeQueryParametersWithKey(QueryParameters.SUPPRESS_REDIRECTS);
             builder.appendQueryParameter(QueryParameters.SUPPRESS_REDIRECTS, value.toString());
         }
     }
@@ -61,19 +68,27 @@ abstract class ApiRequest<ResponseType> {
     public enum ResponseCodes {
         SUPPRESS {
             @Override
-            protected void appendQueryParameter(Builder builder) {
-                appendSuppressResponseCodes(builder, Boolean.TRUE);
+            protected void setQueryParameterOn(UriBuilder builder) {
+                ResponseCodes.setQueryParameterOn(builder, Boolean.TRUE);
             }
         }, UNSUPPRESSED {
             @Override
-            protected void appendQueryParameter(Builder builder) {
-                appendSuppressResponseCodes(builder, Boolean.FALSE);
+            protected void setQueryParameterOn(UriBuilder builder) {
+                ResponseCodes.setQueryParameterOn(builder, Boolean.FALSE);
             }
         };
 
-        protected abstract void appendQueryParameter(Uri.Builder builder);
+        /**
+         * Sets the suppress_response_codes query parameter by removing all existing ones
+         * and then appending it on the given UriBuilder.
+         */
+        protected abstract void setQueryParameterOn(UriBuilder builder);
 
-        private static void appendSuppressResponseCodes(Uri.Builder builder, Boolean value) {
+        private static void setQueryParameterOn(UriBuilder builder, Boolean value) {
+            // The Live SDK is designed to use our value of suppress_response_codes.
+            // If it uses any other value it could cause issues. Remove any previously
+            // existing suppress_response_codes and use ours.
+            builder.removeQueryParametersWithKey(QueryParameters.SUPPRESS_RESPONSE_CODES);
             builder.appendQueryParameter(QueryParameters.SUPPRESS_RESPONSE_CODES, value.toString());
         }
     }
@@ -105,7 +120,11 @@ abstract class ApiRequest<ResponseType> {
     private final String path;
     private final ResponseHandler<ResponseType> responseHandler;
     private final LiveConnectSession session;
-    protected final Uri.Builder requestUri;
+
+    protected final UriBuilder requestUri;
+
+    /** The original path string parsed into a Uri object. */
+    protected final Uri pathUri;
 
     public ApiRequest(LiveConnectSession session,
                       HttpClient client,
@@ -139,36 +158,22 @@ abstract class ApiRequest<ResponseType> {
         this.responseHandler = responseHandler;
         this.path = path;
 
-        Uri.Builder builder;
-        Uri pathUri = Uri.parse(path);
-        if (pathUri.isAbsolute()) {
-            builder = pathUri.buildUpon();
+        UriBuilder builder;
+        this.pathUri = Uri.parse(path);
+
+        if (this.pathUri.isAbsolute()) {
+            // if the path is absolute we will just use that entire path
+            builder = UriBuilder.newInstance(this.pathUri);
         } else {
-            builder = Config.INSTANCE.getApiUri()
-                                     .buildUpon()
-                                     .appendEncodedPath(pathUri.getPath())
-                                     .encodedQuery(pathUri.getQuery());
+            // if it is a relative path then we should use the config's API URI,
+            // which is usually something like https://apis.live.net/v5.0
+            builder = UriBuilder.newInstance(Config.INSTANCE.getApiUri())
+                                .appendToPath(this.pathUri.getEncodedPath())
+                                .query(this.pathUri.getQuery());
         }
 
-        // we need to see if we have any extra query params
-        // that need to be added on to the request uri
-        String apiQuery = Config.INSTANCE.getApiUri().getEncodedQuery();
-        String pathQuery = builder.build().getEncodedQuery();
-        String query;
-        if (apiQuery != null && pathQuery != null) {
-            query = TextUtils.join("&", new String[]{apiQuery, pathQuery});
-        } else if (apiQuery != null) {
-            query = apiQuery;
-        } else if (pathQuery != null) {
-            query = pathQuery;
-        } else {
-            query = "";
-        }
-
-        builder.encodedQuery(query);
-
-        responseCodes.appendQueryParameter(builder);
-        redirects.appendQueryParameter(builder);
+        responseCodes.setQueryParameterOn(builder);
+        redirects.setQueryParameterOn(builder);
 
         this.requestUri = builder;
     }
