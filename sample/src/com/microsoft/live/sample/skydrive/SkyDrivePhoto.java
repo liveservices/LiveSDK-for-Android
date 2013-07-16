@@ -32,7 +32,7 @@ public class SkyDrivePhoto extends SkyDriveObject {
         }
 
         public String getType() {
-            return mImage.optString("source");
+            return mImage.optString("type");
         }
 
         public JSONObject toJson() {
