@@ -6,7 +6,7 @@ http://social.msdn.microsoft.com/Forums/en-US/messengerconnect/thread/6fb7335e-7
 Live SDK for Android 
 ====================
 
-version 5.0
+version 5.5
 
 1. Introduction
 ---------------
