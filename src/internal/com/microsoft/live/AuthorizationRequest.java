@@ -312,7 +312,7 @@ class AuthorizationRequest implements ObservableOAuthRequest, OAuthRequestObserv
      */
     public void execute() {
         String displayType = this.getDisplayParameter();
-        String responseType = OAuth.ResponseType.CODE.toString().toLowerCase();
+        String responseType = OAuth.ResponseType.CODE.toString().toLowerCase(Locale.US);
         String locale = Locale.getDefault().toString();
         Uri requestUri = Config.INSTANCE.getOAuthAuthorizeUri()
                                         .buildUpon()
@@ -351,7 +351,7 @@ class AuthorizationRequest implements ObservableOAuthRequest, OAuthRequestObserv
         ScreenSize screenSize = ScreenSize.determineScreenSize(this.activity);
         DeviceType deviceType = screenSize.getDeviceType();
 
-        return deviceType.getDisplayParameter().toString().toLowerCase();
+        return deviceType.getDisplayParameter().toString().toLowerCase(Locale.US);
     }
 
     /**

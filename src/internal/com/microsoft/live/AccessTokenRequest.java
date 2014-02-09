@@ -7,6 +7,7 @@
 package com.microsoft.live;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -72,6 +73,6 @@ class AccessTokenRequest extends TokenRequest {
         body.add(new BasicNameValuePair(OAuth.CODE, this.code));
         body.add(new BasicNameValuePair(OAuth.REDIRECT_URI, this.redirectUri));
         body.add(new BasicNameValuePair(OAuth.GRANT_TYPE,
-                                        this.grantType.toString().toLowerCase()));
+                                        this.grantType.toString().toLowerCase(Locale.US)));
     }
 }
