@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.http.client.HttpClient;
@@ -108,7 +109,7 @@ public class LiveAuthClient {
 
         @Override
         public void visit(OAuthErrorResponse response) {
-            String error = response.getError().toString().toLowerCase();
+            String error = response.getError().toString().toLowerCase(Locale.US);
             String errorDescription = response.getErrorDescription();
             String errorUri = response.getErrorUri();
             LiveAuthException exception = new LiveAuthException(error,

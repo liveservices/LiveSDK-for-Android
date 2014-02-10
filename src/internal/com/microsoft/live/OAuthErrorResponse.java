@@ -6,6 +6,8 @@
 
 package com.microsoft.live;
 
+import java.util.Locale;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -168,6 +170,6 @@ class OAuthErrorResponse implements OAuthResponse {
     @Override
     public String toString() {
         return String.format("OAuthErrorResponse [error=%s, errorDescription=%s, errorUri=%s]",
-                             error.toString().toLowerCase(), errorDescription, errorUri);
+                             error.toString().toLowerCase(Locale.US), errorDescription, errorUri);
     }
 }

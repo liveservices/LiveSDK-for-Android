@@ -9,6 +9,7 @@ package com.microsoft.live;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -110,7 +111,7 @@ abstract class ApiRequest<ResponseType> {
         String accessToken = session.getAccessToken();
         assert !TextUtils.isEmpty(accessToken);
 
-        String tokenType = OAuth.TokenType.BEARER.toString().toLowerCase();
+        String tokenType = OAuth.TokenType.BEARER.toString().toLowerCase(Locale.US);
         String value = TextUtils.join(" ", new String[]{tokenType, accessToken});
         return new BasicHeader(AUTH.WWW_AUTH_RESP, value);
     }

@@ -6,6 +6,8 @@
 
 package com.microsoft.live;
 
+import java.util.Locale;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -55,7 +57,7 @@ class UploadRequest extends EntityEnclosingApiRequest<JSONObject> {
         this.filename = filename;
         this.overwrite = overwrite;
 
-        String lowerCasePath = this.pathUri.getPath().toLowerCase();
+        String lowerCasePath = this.pathUri.getPath().toLowerCase(Locale.US);
         this.isFileUpload = lowerCasePath.indexOf(FILE_PATH) != -1;
     }
 
