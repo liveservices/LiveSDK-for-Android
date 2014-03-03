@@ -2,7 +2,7 @@
 <manifest package="com.microsoft.live.sample"
       android:versionCode="1"
       android:versionName="1.0" xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="10"/>
+    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="10"/>
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <application 

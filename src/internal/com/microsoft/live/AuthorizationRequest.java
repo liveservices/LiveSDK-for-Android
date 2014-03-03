@@ -119,13 +119,6 @@ class AuthorizationRequest implements ObservableOAuthRequest, OAuthRequestObserv
                 OAuthDialog.this.dismiss();
             }
 
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                // TODO: Android does not like the SSL certificate we use, because it has '*' in
-                // it. Proceed with the errors.
-                handler.proceed();
-            }
-
             private void saveCookiesInMemory(String cookie) {
                 // Not all URLs will have cookies
                 if (TextUtils.isEmpty(cookie)) {
