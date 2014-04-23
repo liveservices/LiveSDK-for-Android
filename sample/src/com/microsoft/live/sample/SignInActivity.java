@@ -51,7 +51,7 @@ public class SignInActivity extends Activity {
                 public void onClick(View v) {
                     showToast("In order to use the sample, you must first place your client id " + 
                               "in com.microsoft.live.sample.Config.CLIENT_ID. For more " +
-                              "information see http://go.microsoft.com/fwlink/?LinkId=220871");
+                              "information see http://go.microsoft.com/fwlink/?LinkId=397523");
                 }
             });
         } else {
