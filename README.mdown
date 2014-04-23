@@ -6,7 +6,7 @@ http://social.msdn.microsoft.com/Forums/en-US/messengerconnect/thread/6fb7335e-7
 Live SDK for Android 
 ====================
 
-version 5.5
+version 5.6
 
 1. Introduction
 ---------------
@@ -64,7 +64,7 @@ The Java Compiler must be version 1.6 or higher.
 3. Documentation
 ----------------
 
-Visit: http://dev.live.com and click the "Documentation" link. 
+Visit: http://dev.onedrive.com and click the "Documentation" link. 
 
 4. Sample project
 -----------------
