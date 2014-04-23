@@ -1,8 +1,3 @@
-Note:
------
-There is a known issue with Live SDK for Android, please resync your repo to address the issue. For more info please visit
-http://social.msdn.microsoft.com/Forums/en-US/messengerconnect/thread/6fb7335e-703b-477f-8dbb-00fda1b4aec0
-
 Live SDK for Android 
 ====================
 
