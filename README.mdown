@@ -11,8 +11,8 @@ version 5.6
 1. Introduction
 ---------------
 
-The Live SDK for Android library is intended to help developers to easily
-integrate SkyDrive and Hotmail contacts and calendars into their Android apps.
+The Live SDK for Android library is intended to help developers to easily 
+integrate OneDrive and Outlook.com contacts into their Android apps.
 
 2. Reference the API
 --------------------
