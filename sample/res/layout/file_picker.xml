@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+
 	<ListView
 	    android:id="@id/android:list"
 		android:layout_width="fill_parent"
@@ -11,7 +12,8 @@
 		android:layout_weight="2"
 		android:drawSelectorOnTop="false">
 	</ListView>
-
+
+
 	<TextView
 	    android:id="@id/android:empty"
 	    android:layout_width="fill_parent"

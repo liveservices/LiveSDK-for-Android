@@ -3,14 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
+
+
+
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/first_name"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
+
+
+
     <EditText
         android:id="@+id/firstNameEditText"
         android:layout_width="match_parent"
@@ -19,13 +23,15 @@
 
         <requestFocus />
     </EditText>
-    <TextView
+
+    <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/last_name"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
+
+
     <EditText
         android:id="@+id/lastNameEditText"
         android:layout_width="match_parent"
