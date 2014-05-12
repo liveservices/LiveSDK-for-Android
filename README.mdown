@@ -67,8 +67,7 @@ Visit: http://dev.onedrive.com and click the "Documentation" link.
 There is a sample project located in the sample directory. Using eclipse this project can be added
 using the File > Import > General > Existing Projects into Workspace wizard. Before the project can be
 properly used, the static variable com.microsoft.live.sample.Config.CLIENT_ID (see Config.java) must
-be changed to your own client ID. For help on obtaining a client ID, please see
-http://go.microsoft.com/fwlink/?LinkId=220871 
+be changed to your own client ID. To obtain a Client ID, visit the [Live SDK App management page] (http://go.microsoft.com/fwlink/p/?LinkId=193157)
 
 5. Known issues:
 ----------------
