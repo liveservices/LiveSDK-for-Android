@@ -6,6 +6,7 @@ package com.microsoft.live.sample.skydrive;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,14 +26,17 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -259,6 +263,8 @@ public class SkyDriveActivity extends ListActivity {
             return position;
         }
 
+        // Note: This implementation of the ListAdapter.getView(...) forces a download of thumb-nails when retrieving
+        // views, this is not a good solution in regards to CPU time and network band-width.
         @Override
         public View getView(int position, View convertView, final ViewGroup parent) {
             SkyDriveObject skyDriveObj = getItem(position);
@@ -330,6 +336,7 @@ public class SkyDriveActivity extends ListActivity {
                     // Since we are doing async calls and mView is constantly changing,
                     // we need to hold on to this reference.
                     final View v = mView;
+                    
                     mClient.downloadAsync(source, new LiveDownloadOperationListener() {
                         @Override
                         public void onDownloadProgress(int totalBytes,
@@ -345,7 +352,11 @@ public class SkyDriveActivity extends ListActivity {
 
                         @Override
                         public void onDownloadCompleted(LiveDownloadOperation operation) {
-                            Bitmap bm = BitmapFactory.decodeStream(operation.getStream());
+                            // Make sure we don't burn up memory for all of these thumb nails that are transient
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inPurgeable = true;
+
+                            Bitmap bm = BitmapFactory.decodeStream(operation.getStream(), (Rect)null, options);
                             ImageView imgView = (ImageView) v.findViewById(R.id.skyDriveItemIcon);
                             imgView.setImageBitmap(bm);
                         }
@@ -437,8 +448,17 @@ public class SkyDriveActivity extends ListActivity {
 
                 @Override
                 public void onDownloadCompleted(LiveDownloadOperation operation) {
-                    Bitmap bm = BitmapFactory.decodeStream(operation.getStream());
-                    imgView.setImageBitmap(bm);
+                    new AsyncTask<LiveDownloadOperation, Long, Bitmap>() {
+                        @Override
+                        protected Bitmap doInBackground(LiveDownloadOperation... params) {
+                            return extractScaledBitmap(mPhoto, params[0].getStream());
+                        }
+
+                        @Override
+                        protected void onPostExecute(Bitmap result) {
+                            imgView.setImageBitmap(result);
+                        }
+                    }.execute(operation);
                 }
             });
         }
@@ -770,4 +790,31 @@ public class SkyDriveActivity extends ListActivity {
     private ProgressDialog showProgressDialog(String title, String message, boolean indeterminate) {
         return ProgressDialog.show(this, title, message, indeterminate);
     }
+
+    /**
+     * Extract a photo from SkyDrive and creates a scaled bitmap according to the device resolution, this is needed to
+     * prevent memory over-allocation that can cause some devices to crash when opening high-resolution pictures
+     *
+     * Note: this method should not be used for downloading photos, only for displaying photos on-screen
+     *
+     * @param photo The source photo to download
+     * @param imageStream The stream that contains the photo
+     * @return Scaled bitmap representation of the photo
+     * @see http://stackoverflow.com/questions/477572/strange-out-of-memory-issue-while-loading-an-image-to-a-bitmap-object/823966#823966
+     */
+    private Bitmap extractScaledBitmap(SkyDrivePhoto photo, InputStream imageStream) {
+        Display display = getWindowManager().getDefaultDisplay();
+        int IMAGE_MAX_SIZE = Math.max(display.getWidth(), display.getHeight());
+
+        int scale = 1;
+        if (photo.getHeight() > IMAGE_MAX_SIZE  || photo.getWidth() > IMAGE_MAX_SIZE) {
+            scale = (int)Math.pow(2, (int) Math.ceil(Math.log(IMAGE_MAX_SIZE /
+               (double) Math.max(photo.getHeight(), photo.getWidth())) / Math.log(0.5)));
+        }
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPurgeable = true;
+        options.inSampleSize = scale;
+        return BitmapFactory.decodeStream(imageStream, (Rect)null, options);
+    };
 }
