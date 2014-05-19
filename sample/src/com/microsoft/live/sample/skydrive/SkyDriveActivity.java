@@ -336,31 +336,30 @@ public class SkyDriveActivity extends ListActivity {
                     // Since we are doing async calls and mView is constantly changing,
                     // we need to hold on to this reference.
                     final View v = mView;
-                    
-                    mClient.downloadAsync(source, new LiveDownloadOperationListener() {
+                    new AsyncTask<String, Long, Bitmap>() {
                         @Override
-                        public void onDownloadProgress(int totalBytes,
-                                                       int bytesRemaining,
-                                                       LiveDownloadOperation operation) {
+                        protected Bitmap doInBackground(String... params) {
+                            try {
+                                // Download the thumb nail image
+                                LiveDownloadOperation operation = mClient.download(params[0]);
+
+                                // Make sure we don't burn up memory for all of
+                                // these thumb nails that are transient
+                                BitmapFactory.Options options = new BitmapFactory.Options();
+                                options.inPurgeable = true;
+                                return BitmapFactory.decodeStream(operation.getStream(), (Rect)null, options);
+                            } catch (Exception e) {
+                                showToast(e.getMessage());
+                                return null;
+                            }
                         }
 
                         @Override
-                        public void onDownloadFailed(LiveOperationException exception,
-                                                     LiveDownloadOperation operation) {
-                            showToast(exception.getMessage());
+                        protected void onPostExecute(Bitmap result) {
+                            ImageView imgView = (ImageView)v.findViewById(R.id.skyDriveItemIcon);
+                            imgView.setImageBitmap(result);
                         }
-
-                        @Override
-                        public void onDownloadCompleted(LiveDownloadOperation operation) {
-                            // Make sure we don't burn up memory for all of these thumb nails that are transient
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inPurgeable = true;
-
-                            Bitmap bm = BitmapFactory.decodeStream(operation.getStream(), (Rect)null, options);
-                            ImageView imgView = (ImageView) v.findViewById(R.id.skyDriveItemIcon);
-                            imgView.setImageBitmap(bm);
-                        }
-                    });
+                    }.execute(source);
                 }
 
                 @Override
