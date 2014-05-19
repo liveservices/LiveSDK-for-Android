@@ -25,4 +25,9 @@
     <string name="sign_out">Sign out</string>
     <string name="welcome">Welcome to the Live SDK for Android Sample Application!</string>
     <string name="begin">Begin by hitting in the \"Sign in\" button.</string>
+    <string name="AndroidSignInHelpLink">http://go.microsoft.com/fwlink/p/?LinkId=193157</string>
+    <string name="unset_client_message_title">Unset Client ID</string>
+    <string name="unset_client_message_body">In order to use the sample, you must first place your client id in com.microsoft.live.sample.Config.CLIENT_ID. For more information click navigate, or paste the link from the clipboard.</string>
+    <string name="unset_client_message_positive">Navigate</string>
+    <string name="unset_client_message_negitive">Cancel</string>
 </resources>
