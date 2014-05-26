@@ -33,7 +33,9 @@ android {
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
         }
-
+        androidTest {
+            java.srcDirs = ['../unittest/src', '../utilities/src']
+        }
     }
 
 }
