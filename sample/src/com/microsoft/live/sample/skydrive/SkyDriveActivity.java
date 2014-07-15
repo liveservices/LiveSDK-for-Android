@@ -590,6 +590,8 @@ public class SkyDriveActivity extends ListActivity {
                     @Override
                     public void visit(SkyDriveFile file) {
                         Bundle b = new Bundle();
+                        b.putString(JsonKeys.ID, file.getId());
+                        b.putString(JsonKeys.NAME, file.getName());
                         showDialog(DIALOG_DOWNLOAD_ID, b);
                     }
 
