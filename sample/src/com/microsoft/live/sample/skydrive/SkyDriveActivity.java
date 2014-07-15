@@ -774,7 +774,9 @@ public class SkyDriveActivity extends ListActivity {
                 JSONArray data = result.optJSONArray(JsonKeys.DATA);
                 for (int i = 0; i < data.length(); i++) {
                     SkyDriveObject skyDriveObj = SkyDriveObject.create(data.optJSONObject(i));
-                    skyDriveObjs.add(skyDriveObj);
+                    if (skyDriveObj != null) {
+                        skyDriveObjs.add(skyDriveObj);
+                    }
                 }
 
                 mPhotoAdapter.notifyDataSetChanged();
