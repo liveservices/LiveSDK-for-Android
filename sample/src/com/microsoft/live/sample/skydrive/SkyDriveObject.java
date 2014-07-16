@@ -18,6 +18,8 @@ package com.microsoft.live.sample.skydrive;
 
 import org.json.JSONObject;
 
+import android.util.Log;
+
 public abstract class SkyDriveObject {
     public interface Visitor {
         public void visit(SkyDriveAlbum album);
@@ -84,7 +86,11 @@ public abstract class SkyDriveObject {
             return new SkyDriveAudio(skyDriveObject);
         }
 
-        throw new AssertionError("Unknown SkyDriveObject type");
+        final String name = skyDriveObject.optString("name");
+        Log.e(SkyDriveObject.class.getName(),
+                String.format("Unknown SkyDriveObject type.  Name: %s, Type %s", name, type));
+
+        return null;
     }
 
     protected final JSONObject mObject;
