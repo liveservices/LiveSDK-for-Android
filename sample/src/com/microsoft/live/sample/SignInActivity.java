@@ -18,13 +18,10 @@ package com.microsoft.live.sample;
 
 import java.util.Arrays;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.ClipboardManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -48,6 +45,10 @@ public class SignInActivity extends Activity {
 
     private TextView mBeginTextView;
 
+    private Button mNeedIdButton;
+
+    private TextView mBeginTextViewNeedId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,47 +57,30 @@ public class SignInActivity extends Activity {
         mApp = (LiveSdkSampleApplication)getApplication();
         mAuthClient = new LiveAuthClient(mApp, Config.CLIENT_ID);
         mApp.setAuthClient(mAuthClient);
-
         mInitializeDialog = ProgressDialog.show(this, "", "Initializing. Please wait...", true);
-
+        
         mBeginTextView = (TextView)findViewById(R.id.beginTextView);
         mSignInButton = (Button)findViewById(R.id.signInButton);
+        
+        mBeginTextViewNeedId = (TextView)findViewById(R.id.beginTextViewNeedId);
+        mNeedIdButton = (Button)findViewById(R.id.needIdButton);
 
-        // Check to see if the CLIENT_ID has been changed.
-        if (Config.CLIENT_ID.equals("YOUR CLIENT ID HERE")) {
-            final Activity thisActivity = this;
-            mSignInButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final String AndroidSignInHelpLink = getString(R.string.AndroidSignInHelpLink);
-                    ClipboardManager clipBoard = (ClipboardManager)thisActivity.getSystemService(CLIPBOARD_SERVICE);
-                    clipBoard.setText(AndroidSignInHelpLink);
+        // Check to see if the CLIENT_ID has been changed. 
+        if (Config.CLIENT_ID.equals("0000000048122D4E")) {
+        	 mNeedIdButton.setVisibility(View.VISIBLE);
+             mBeginTextViewNeedId.setVisibility(View.VISIBLE);
+             mNeedIdButton.setOnClickListener(new View.OnClickListener() {
 
-                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(thisActivity);
-                    AlertDialog dialog = dialogBuilder
-                            .setTitle(R.string.unset_client_message_title)
-                            .setMessage(R.string.unset_client_message_body)
-                            .setPositiveButton(R.string.unset_client_message_positive,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            final Intent intent = new Intent(Intent.ACTION_VIEW);
-                                            intent.setData(Uri.parse(AndroidSignInHelpLink));
-                                            startActivity(intent);
-                                        }
-                                    })
-                            .setNegativeButton(R.string.unset_client_message_negitive,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.cancel();
-                                        }
-                                    }).create();
-                    dialog.show();
-                }
-            });
-        } else {
-            mSignInButton.setOnClickListener(new OnClickListener() {
+            	   @Override
+            	   public void onClick(View view) {
+            		   final Intent intent = new Intent(Intent.ACTION_VIEW);
+            		   intent.setData(Uri.parse(getBaseContext().getString(R.string.AndroidSignInHelpLink)));
+            		   startActivity(intent);
+            	   }
+            	});
+        }
+
+      mSignInButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mAuthClient.login(SignInActivity.this, Arrays.asList(Config.SCOPES), new LiveAuthListener() {
@@ -116,7 +100,7 @@ public class SignInActivity extends Activity {
                     });
                 }
             });
-        }
+        
     }
 
     @Override
@@ -139,7 +123,6 @@ public class SignInActivity extends Activity {
                     launchMainActivity(session);
                 } else {
                     showSignIn();
-                    showToast("Initialize did not connect. Please try login in.");
                 }
             }
         });
