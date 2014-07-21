@@ -5,7 +5,6 @@
     android:gravity="center"
     android:orientation="vertical" >
 
-
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
@@ -13,12 +12,32 @@
         android:gravity="center"
         android:text="@string/welcome"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+   <Button
+        android:id="@+id/needIdButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:visibility="invisible"
+        android:text="@string/unset_client_message_title" />
+    
+    <TextView
+        android:id="@+id/beginTextViewNeedId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+		android:visibility="invisible"
+        android:text="@string/unset_client_message_body"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
+ 
     <TextView
         android:id="@+id/beginTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/begin"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:visibility="invisible" />
 
@@ -26,6 +45,7 @@
         android:id="@+id/signInButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="@string/sign_in"
         android:visibility="invisible" />
 
