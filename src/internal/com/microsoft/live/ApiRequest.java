@@ -174,19 +174,30 @@ abstract class ApiRequest<ResponseType> {
         this.observers = new ArrayList<Observer>();
         this.responseHandler = responseHandler;
         this.path = path;
-
-        UriBuilder builder;
         this.pathUri = Uri.parse(path);
 
-        if (this.pathUri.isAbsolute()) {
+        final int queryStart = path.indexOf("?");
+        final String pathWithoutQuery = path.substring(0, queryStart != -1 ? queryStart : path.length());
+        final Uri uriWithoutQuery = Uri.parse(pathWithoutQuery);
+        final String query;
+        if (queryStart != -1) {
+            query = path.substring(queryStart + 1, path.length());
+        } else {
+            query = "";
+        }
+
+        UriBuilder builder;
+
+        if (uriWithoutQuery.isAbsolute()) {
             // if the path is absolute we will just use that entire path
-            builder = UriBuilder.newInstance(this.pathUri);
+            builder = UriBuilder.newInstance(uriWithoutQuery)
+                                .query(query);
         } else {
             // if it is a relative path then we should use the config's API URI,
             // which is usually something like https://apis.live.net/v5.0
             builder = UriBuilder.newInstance(Config.INSTANCE.getApiUri())
-                                .appendToPath(this.pathUri.getEncodedPath())
-                                .query(this.pathUri.getQuery());
+                                .appendToPath(uriWithoutQuery.getEncodedPath())
+                                .query(query);
         }
 
         responseCodes.setQueryParameterOn(builder);
