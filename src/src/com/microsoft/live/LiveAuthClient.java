@@ -165,11 +165,11 @@ public class LiveAuthClient {
         public void visit(OAuthSuccessfulResponse response) {
             String refreshToken = response.getRefreshToken();
             if (!TextUtils.isEmpty(refreshToken)) {
-                this.saveRefreshTokenToPerferences(refreshToken);
+                this.saveRefreshTokenToPreferences(refreshToken);
             }
         }
 
-        private boolean saveRefreshTokenToPerferences(String refreshToken) {
+        private boolean saveRefreshTokenToPreferences(String refreshToken) {
             assert !TextUtils.isEmpty(refreshToken);
 
             SharedPreferences settings =
