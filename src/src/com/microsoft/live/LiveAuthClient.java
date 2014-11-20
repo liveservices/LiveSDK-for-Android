@@ -285,7 +285,7 @@ public class LiveAuthClient {
      * @param listener called on either completion or error during the initialize process.
      */
     public void initialize(Iterable<String> scopes, LiveAuthListener listener) {
-        this.initialize(scopes, listener, null);
+        this.initialize(scopes, listener, null, null);
     }
 
     /**
@@ -305,7 +305,30 @@ public class LiveAuthClient {
      * @param listener called on either completion or error during the initialize process
      * @param userState arbitrary object that is used to determine the caller of the method.
      */
-    public void initialize(Iterable<String> scopes, LiveAuthListener listener, Object userState) {
+    public void initialize(Iterable<String> scopes, LiveAuthListener listener, Object userState ) {
+        initialize(scopes,listener,userState,null);
+    }
+
+    /**
+     * Initializes a new {@link LiveConnectSession} with the given scopes.
+     *
+     * The {@link LiveConnectSession} will be returned by calling
+     * {@link LiveAuthListener#onAuthComplete(LiveStatus, LiveConnectSession, Object)}.
+     * Otherwise, the {@link LiveAuthListener#onAuthError(LiveAuthException, Object)} will be
+     * called. These methods will be called on the main/UI thread.
+     *
+     * If the wl.offline_access scope is used, a refresh_token is stored in the given
+     * {@link Activity}'s {@link SharedPerfences}.
+     *
+     * @param scopes to initialize the {@link LiveConnectSession} with.
+     *        See <a href="http://msdn.microsoft.com/en-us/library/hh243646.aspx">MSDN Live Connect
+     *        Reference's Scopes and permissions</a> for a list of scopes and explanations.
+     * @param listener called on either completion or error during the initialize process
+     * @param userState arbitrary object that is used to determine the caller of the method.
+     * @param refreshToken optional previously saved token to be used by this client.
+     */
+    public void initialize(Iterable<String> scopes, LiveAuthListener listener, Object userState,
+                           String refreshToken ) {
         if (listener == null) {
             listener = NULL_LISTENER;
         }
@@ -321,7 +344,10 @@ public class LiveAuthClient {
         }
         this.scopesFromInitialize = Collections.unmodifiableSet(this.scopesFromInitialize);
 
-        String refreshToken = this.getRefreshTokenFromPreferences();
+        //if no token is provided, try to get one from SharedPreferences
+        if ( refreshToken == null ) {
+            refreshToken = this.getRefreshTokenFromPreferences();
+        }
 
         if (refreshToken == null) {
             listener.onAuthComplete(LiveStatus.UNKNOWN, null, userState);
@@ -377,7 +403,7 @@ public class LiveAuthClient {
      * @param userState arbitrary object that is used to determine the caller of the method.
      */
     public void initialize(LiveAuthListener listener, Object userState) {
-        this.initialize(null, listener, userState);
+        this.initialize(null, listener, userState,null);
     }
 
     /**
