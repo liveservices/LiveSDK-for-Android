@@ -1,1 +1,1 @@
-include ':sample', ':src'
+include ':sample', ':live-sdk'
