@@ -305,7 +305,7 @@ public class LiveAuthClient {
      * @param listener called on either completion or error during the initialize process
      * @param userState arbitrary object that is used to determine the caller of the method.
      */
-    public void initialize(Iterable<String> scopes, LiveAuthListener listener, Object userState, String refreshToken ) {
+    public void initialize(Iterable<String> scopes, LiveAuthListener listener, Object userState) {
         if (listener == null) {
             listener = NULL_LISTENER;
         }
@@ -321,9 +321,7 @@ public class LiveAuthClient {
         }
         this.scopesFromInitialize = Collections.unmodifiableSet(this.scopesFromInitialize);
 
-        if ( refreshToken == null ) {
-            refreshToken = this.getRefreshTokenFromPreferences();
-        }
+        String refreshToken = this.getRefreshTokenFromPreferences();
 
         if (refreshToken == null) {
             listener.onAuthComplete(LiveStatus.UNKNOWN, null, userState);
