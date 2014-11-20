@@ -25,7 +25,7 @@ android {
     }
 
     dependencies {
-        compile project(':live-sdk')
+        compile project(':src')
     }
 
 }
