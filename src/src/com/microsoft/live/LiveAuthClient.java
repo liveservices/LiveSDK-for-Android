@@ -285,15 +285,7 @@ public class LiveAuthClient {
      * @param listener called on either completion or error during the initialize process.
      */
     public void initialize(Iterable<String> scopes, LiveAuthListener listener) {
-        this.initialize(scopes, listener, null, null );
-    }
-
-    public void initialize(Iterable<String> scopes, LiveAuthListener listener, String refreshToken ) {
-        this.initialize(scopes, listener, null, refreshToken);
-    }
-
-    public void initialize(Iterable<String> scopes, LiveAuthListener listener, Object userState ) {
-        this.initialize(scopes, listener, userState, null);
+        this.initialize(scopes, listener, null);
     }
 
     /**
@@ -387,7 +379,7 @@ public class LiveAuthClient {
      * @param userState arbitrary object that is used to determine the caller of the method.
      */
     public void initialize(LiveAuthListener listener, Object userState) {
-        this.initialize(null, listener, userState,null);
+        this.initialize(null, listener, userState);
     }
 
     /**
