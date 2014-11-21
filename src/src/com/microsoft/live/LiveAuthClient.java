@@ -345,7 +345,7 @@ public class LiveAuthClient {
         this.scopesFromInitialize = Collections.unmodifiableSet(this.scopesFromInitialize);
 
         //if no token is provided, try to get one from SharedPreferences
-        if ( refreshToken == null ) {
+        if (refreshToken == null) {
             refreshToken = this.getRefreshTokenFromPreferences();
         }
 
@@ -403,7 +403,7 @@ public class LiveAuthClient {
      * @param userState arbitrary object that is used to determine the caller of the method.
      */
     public void initialize(LiveAuthListener listener, Object userState) {
-        this.initialize(null, listener, userState,null);
+        this.initialize(null, listener, userState, null);
     }
 
     /**
