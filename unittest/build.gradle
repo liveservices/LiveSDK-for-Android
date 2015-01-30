@@ -19,18 +19,17 @@ android {
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src','internal']
+            java.srcDirs = ['src']
             resources.srcDirs = ['src']
             aidl.srcDirs = ['src']
             renderscript.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
         }
-
     }
+}
 
-    dependencies {
-        compile project(':src')
-    }
-
+dependencies {
+    compile project(':src')
+    compile project(':utilities')
 }
