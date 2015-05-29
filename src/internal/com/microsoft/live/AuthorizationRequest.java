@@ -100,7 +100,7 @@ class AuthorizationRequest implements ObservableOAuthRequest, OAuthRequestObserv
                 Uri uri = Uri.parse(url);
 
                 // only clear cookies that are on the logout domain.
-                if (uri.getHost().equals(Config.INSTANCE.getOAuthLogoutUri().getHost())) {
+                if (uri.getHost() != null && uri.getHost().equals(Config.INSTANCE.getOAuthLogoutUri().getHost())) {
                     this.saveCookiesInMemory(this.cookieManager.getCookie(url));
                 }
 
