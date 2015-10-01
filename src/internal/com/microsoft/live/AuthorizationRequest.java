@@ -40,14 +40,12 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
-import android.net.http.SslError;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
-import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -133,13 +131,6 @@ class AuthorizationRequest implements ObservableOAuthRequest, OAuthRequestObserv
                                         String failingUrl) {
                 AuthorizationRequest.this.onError("", description, failingUrl);
                 OAuthDialog.this.dismiss();
-            }
-
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                // TODO: Android does not like the SSL certificate we use, because it has '*' in
-                // it. Proceed with the errors.
-                handler.proceed();
             }
 
             private void saveCookiesInMemory(String cookie) {
