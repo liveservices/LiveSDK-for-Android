@@ -1,4 +1,9 @@
-Live SDK for Android 
+Annoucement: There's a new OneDrive SDK
+The Live SDK has been replaced by the OneDrive API and [OneDrive SDK for Android](https://github.com/OneDrive/onedrive-sdk-android). All new projects should use the OneDrive API to integrate with OneDrive instead of Live SDK.
+
+This Live SDK project will remain available for existing applications to continue to use but new application development should be done using the OneDrive SDK.
+
+Live SDK for Android (Legacy)
 ====================
 
 version 5.6
